@@ -29,8 +29,6 @@
 */
 
 #include "cntd.h"
-//#include "${CNTD_MERIC_DIR}/cntd_meric.h"
-//#include "/home/it4i-kaddooja/test3/meric/cntd_meric.h"
 #include "stdbool.h"
 
 #ifdef CNTD_MERIC
@@ -408,7 +406,7 @@ HIDDEN void time_sample(int sig, siginfo_t *siginfo, void *context)
 #endif
 
 #ifdef CNTD_MERIC
-        //if (ts_begin) extlib_free_energy_timestamp(ts_begin);
+
         ts_begin = extlib_read_energy_measurements(&energy_domains);
 
 #else
