@@ -29,6 +29,8 @@
 */
 
 #include "cntd.h"
+//#include "${CNTD_MERIC_DIR}/cntd_meric.h"
+#include "/home/it4i-kaddooja/test3/meric/cntd_meric.h"
 
 static FILE *timeseries_fd;
 
@@ -114,15 +116,9 @@ static void print_rank(CNTD_RankInfo_t *rankinfo, double exe_time)
 	// Data
 	const char* format = "%d;%s;%d;%.9f;%.9f;%ld;%.3f;%0.f;%.2f;%lu;%lu;%lu;%lu;%lu;%lu;%lu;%lu(%lu/%lu);%lu(%lu/%lu);%lu(%lu/%lu);%lu(%lu/%lu);%lu(%lu/%lu);%lu;%lu;%lu;%lu;%lu;%lu(%lu/%lu);%lu(%lu/%lu);%lu(%lu/%lu);%lu(%lu/%lu);%lu(%lu/%lu);%lu(%lu/%lu);%lu";
 
-<<<<<<< HEAD
     uint64_t time_steps = ceil(exe_time/cntd->sampling_time);
 	for(i = 0; i < world_size; i++)
 	{
-=======
-	uint64_t time_steps = ceil(exe_time / cntd->sampling_time);
-#if (defined INTEL || defined AMD)
-	for (i = 0; i < world_size; i++) {
->>>>>>> 04e062430c02f93a9071215bacf0bee6483f0796
 		uint64_t dp_uops_64 = rankinfo[i].perf[PERF_SCALAR_DOUBLE][TOT];
 		uint64_t dp_uops_128 = rankinfo[i].perf[PERF_128_PACKED_DOUBLE][TOT];
 		uint64_t dp_uops_256 = rankinfo[i].perf[PERF_256_PACKED_DOUBLE][TOT];
@@ -263,7 +259,6 @@ static void print_rank(CNTD_RankInfo_t *rankinfo, double exe_time)
 				fprintf(fd, ";%lu", rankinfo[i].perf[j][TOT]);
 		fprintf(fd, "\n");
 	}
-#endif
 
 	fclose(fd);
 }
@@ -528,7 +523,6 @@ printf("DEBUG: dram Energy: %f\n", global_energy_dram);
 			global_cycles += rankinfo[i].perf[PERF_CYCLES][TOT];
 			global_inst_ret += rankinfo[i].perf[PERF_INST_RET][TOT];
 
-<<<<<<< HEAD
 			global_dp_uops_64 += rankinfo[i].perf[PERF_SCALAR_DOUBLE][TOT];
 			global_time_en_dp_uops_64 += rankinfo[i].perf_te[PERF_SCALAR_DOUBLE][TOT];
 			global_time_run_dp_uops_64 += rankinfo[i].perf_tr[PERF_SCALAR_DOUBLE][TOT];
@@ -553,58 +547,6 @@ printf("DEBUG: dram Energy: %f\n", global_energy_dram);
 			global_sp_uops_512 += rankinfo[i].perf[PERF_512_PACKED_SINGLE][TOT];
 			global_time_en_sp_uops_512 += rankinfo[i].perf_te[PERF_512_PACKED_SINGLE][TOT];
 			global_time_run_sp_uops_512 += rankinfo[i].perf_tr[PERF_512_PACKED_SINGLE][TOT];
-=======
-#if (defined INTEL || defined AMD)
-			global_dp_uops_64 +=
-				rankinfo[i].perf[PERF_SCALAR_DOUBLE][TOT];
-			global_time_en_dp_uops_64 +=
-				rankinfo[i].perf_te[PERF_SCALAR_DOUBLE][TOT];
-			global_time_run_dp_uops_64 +=
-				rankinfo[i].perf_tr[PERF_SCALAR_DOUBLE][TOT];
-			global_sp_uops_32 +=
-				rankinfo[i].perf[PERF_SCALAR_SINGLE][TOT];
-			global_time_en_sp_uops_32 +=
-				rankinfo[i].perf_te[PERF_SCALAR_SINGLE][TOT];
-			global_time_run_sp_uops_32 +=
-				rankinfo[i].perf_tr[PERF_SCALAR_SINGLE][TOT];
-			global_dp_uops_128 +=
-				rankinfo[i].perf[PERF_128_PACKED_DOUBLE][TOT];
-			global_time_en_dp_uops_128 +=
-				rankinfo[i].perf_te[PERF_128_PACKED_DOUBLE][TOT];
-			global_time_run_dp_uops_128 +=
-				rankinfo[i].perf_tr[PERF_128_PACKED_DOUBLE][TOT];
-			global_sp_uops_128 +=
-				rankinfo[i].perf[PERF_128_PACKED_SINGLE][TOT];
-			global_time_en_sp_uops_128 +=
-				rankinfo[i].perf_te[PERF_128_PACKED_SINGLE][TOT];
-			global_time_run_sp_uops_128 +=
-				rankinfo[i].perf_tr[PERF_128_PACKED_SINGLE][TOT];
-			global_dp_uops_256 +=
-				rankinfo[i].perf[PERF_256_PACKED_DOUBLE][TOT];
-			global_time_en_dp_uops_256 +=
-				rankinfo[i].perf_te[PERF_256_PACKED_DOUBLE][TOT];
-			global_time_run_dp_uops_256 +=
-				rankinfo[i].perf_tr[PERF_256_PACKED_DOUBLE][TOT];
-			global_sp_uops_256 +=
-				rankinfo[i].perf[PERF_256_PACKED_SINGLE][TOT];
-			global_time_en_sp_uops_256 +=
-				rankinfo[i].perf_te[PERF_256_PACKED_SINGLE][TOT];
-			global_time_run_sp_uops_256 +=
-				rankinfo[i].perf_tr[PERF_256_PACKED_SINGLE][TOT];
-			global_dp_uops_512 +=
-				rankinfo[i].perf[PERF_512_PACKED_DOUBLE][TOT];
-			global_time_en_dp_uops_512 +=
-				rankinfo[i].perf_te[PERF_512_PACKED_DOUBLE][TOT];
-			global_time_run_dp_uops_512 +=
-				rankinfo[i].perf_tr[PERF_512_PACKED_DOUBLE][TOT];
-			global_sp_uops_512 +=
-				rankinfo[i].perf[PERF_512_PACKED_SINGLE][TOT];
-			global_time_en_sp_uops_512 +=
-				rankinfo[i].perf_te[PERF_512_PACKED_SINGLE][TOT];
-			global_time_run_sp_uops_512 +=
-				rankinfo[i].perf_tr[PERF_512_PACKED_SINGLE][TOT];
-#endif
->>>>>>> 04e062430c02f93a9071215bacf0bee6483f0796
 
 #ifdef INTEL
 			if (rankinfo[i].local_rank == 0) {
@@ -1885,27 +1827,12 @@ HIDDEN void print_timeseries_report(
 	for(i = 0; i < cntd->local_rank_size; i++)
 		fprintf(timeseries_fd, ";%lu", cntd->local_ranks[i]->perf[PERF_INST_RET][CURR]);
 
-<<<<<<< HEAD
 	for(i = 0; i < cntd->local_rank_size; i++) {
 		uint64_t dp_uops_64 = cntd->local_ranks[i]->perf[PERF_SCALAR_DOUBLE][CURR];
 		uint64_t dp_uops_128 = cntd->local_ranks[i]->perf[PERF_128_PACKED_DOUBLE][CURR];
 		uint64_t dp_uops_256 = cntd->local_ranks[i]->perf[PERF_256_PACKED_DOUBLE][CURR];
 		uint64_t dp_uops_512 = cntd->local_ranks[i]->perf[PERF_512_PACKED_DOUBLE][CURR];
 		uint64_t dp_uops_tot = (dp_uops_64 + dp_uops_128 + dp_uops_256 + dp_uops_512);
-=======
-#if (defined INTEL || defined AMD)
-	for (i = 0; i < cntd->rank->local_size; i++) {
-		uint64_t dp_uops_64 =
-			cntd->local_ranks[i]->perf[PERF_SCALAR_DOUBLE][CURR];
-		uint64_t dp_uops_128 =
-			cntd->local_ranks[i]->perf[PERF_128_PACKED_DOUBLE][CURR];
-		uint64_t dp_uops_256 =
-			cntd->local_ranks[i]->perf[PERF_256_PACKED_DOUBLE][CURR];
-		uint64_t dp_uops_512 =
-			cntd->local_ranks[i]->perf[PERF_512_PACKED_DOUBLE][CURR];
-		uint64_t dp_uops_tot =
-			(dp_uops_64 + dp_uops_128 + dp_uops_256 + dp_uops_512);
->>>>>>> 04e062430c02f93a9071215bacf0bee6483f0796
 		uint64_t dp_flops_64 = dp_uops_64;
 		uint64_t dp_flops_128 = (dp_uops_128 * 2);
 		uint64_t dp_flops_256 = (dp_uops_256 * 4);
@@ -2057,7 +1984,7 @@ HIDDEN void print_timeseries_report(
 				time_run_mem);
 		fprintf(timeseries_fd	   , ";%lu", mem_data);
 	}
-#endif
+
 	// Linux perf
 	for(j = 0; j < MAX_NUM_CUSTOM_PERF; j++)
 	{

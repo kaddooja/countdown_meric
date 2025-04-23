@@ -324,19 +324,12 @@ HIDDEN int get_maximum_turbo_frequency()
 
 HIDDEN int get_minimum_frequency()
 {
-<<<<<<< HEAD
 	if(cntd->enable_eam_freq)
 	{
 #ifdef HWP_AVAIL
 		if (hwp_usage) {
 			int offset;
 			int min_pstate;
-=======
-#ifdef HWP_AVAIL
-	if (cntd->hwp_usage) {
-		int offset;
-		int min_pstate;
->>>>>>> 04e062430c02f93a9071215bacf0bee6483f0796
 
 			offset = IA32_HWP_CAPABILITIES;
 
@@ -364,25 +357,6 @@ HIDDEN int get_minimum_frequency()
 #endif
 		return (int) pstate_float;
 	}
-<<<<<<< HEAD
-=======
-#endif
-	int world_rank;
-	char min_freq_value[STRING_SIZE];
-	char hostname[STRING_SIZE];
-
-	gethostname(hostname, sizeof(hostname));
-	PMPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
-
-	if (read_str_from_file(CPUINFO_MIN_FREQ, min_freq_value) < 0) {
-		fprintf(stderr,
-			"Error: <COUNTDOWN-node:%s-rank:%d> Failed to read file: %s\n",
-			hostname, world_rank, CPUINFO_MIN_FREQ);
-		PMPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-	}
-	long int min_freq = strtol(min_freq_value, NULL, 10);
-	return (int)min_freq;
->>>>>>> 04e062430c02f93a9071215bacf0bee6483f0796
 }
 
 HIDDEN void pm_init()
@@ -422,7 +396,6 @@ HIDDEN void pm_init()
 
 HIDDEN void pm_finalize()
 {
-<<<<<<< HEAD
 	if(cntd->enable_eam_freq)
 	{
 #if !defined CPUFREQ
@@ -430,12 +403,4 @@ HIDDEN void pm_finalize()
 		close(cntd->msr_fd);
 #endif
 	}
-=======
-	set_sys_max_freq();
-
-#if (defined INTEL || defined AMD)
-	if (!cntd->use_cpufreq)
-		close(cntd->msr_fd);
-#endif
->>>>>>> 04e062430c02f93a9071215bacf0bee6483f0796
 }

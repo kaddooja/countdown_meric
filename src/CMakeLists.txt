@@ -42,6 +42,9 @@ set(SOURCES
 	wrapper_pmpi_c_cpp.c
 	wrapper_pmpi_fortran.c
 	hwp.c
+	#${CNTD_MERIC_DIR}/src/extlib/extlib.cpp
+	#${CNTD_MERIC_DIR}/cntd_meric.cpp
+	# ${CNTD_MERIC_DIR}/Main.c
 	)
 
 # Add dynamic library
@@ -121,7 +124,6 @@ elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64")
 else()
 	message(FATAL_ERROR "The architecture ${CMAKE_SYSTEM_PROCESSOR} is not supported!")
 endif()
-
 
 # Build options
 if(CNTD_ENABLE_CUDA)

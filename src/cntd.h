@@ -59,7 +59,6 @@
 // hwloc
 #include <hwloc.h>
 
-<<<<<<< HEAD
 // NVML
 #ifdef NVIDIA_GPU
 #include <nvml.h>
@@ -126,10 +125,6 @@
 #endif
 
 
-=======
-// CNTD Common Definitions
-#include "common_def.h"
->>>>>>> 04e062430c02f93a9071215bacf0bee6483f0796
 // CNTD MPI Definitions
 #include "cntd_mpi_def.h"
 
