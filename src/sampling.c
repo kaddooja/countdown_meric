@@ -29,8 +29,6 @@
 */
 
 #include "cntd.h"
-//#include "${CNTD_MERIC_DIR}/cntd_meric.h"
-//#include "/home/it4i-kaddooja/test3/meric/cntd_meric.h"
 #include "stdbool.h"
 
 #ifdef CNTD_MERIC
@@ -408,7 +406,7 @@ HIDDEN void time_sample(int sig, siginfo_t *siginfo, void *context)
 #endif
 
 #ifdef CNTD_MERIC
-        //if (ts_begin) extlib_free_energy_timestamp(ts_begin);
+
         ts_begin = extlib_read_energy_measurements(&energy_domains);
 
 #else
@@ -505,13 +503,14 @@ if (ts_begin && ts_end)
     struct ExtlibEnergyTimeStamp *energy_result = extlib_calc_energy_consumption(ts_begin, ts_end);
     if (energy_result) 
     {
-        energy_sys = energy_result->energy_total;  // Update only system-level energy
+        energy_sys = energy_result->energy_total;  
         cntd->node.energy_sys += energy_sys;  //  Update COUNTDOWN energy
         extlib_free_energy_timestamp(energy_result);
     }
 }
 
 // Move ts_end to ts_begin for the next interval
+extlib_free_energy_timestamp(ts_begin);
 ts_begin = ts_end;
 
 #else
@@ -767,7 +766,7 @@ HIDDEN void finalize_time_sample()
 #ifdef CNTD_MERIC
 
         extlib_close(&energy_domains);
-        if (ts_begin) extlib_free_energy_timestamp(ts_begin);
+        //if (ts_begin) extlib_free_energy_timestamp(ts_begin);
         //if (ts_end) extlib_free_energy_timestamp(ts_end);
 #endif
 

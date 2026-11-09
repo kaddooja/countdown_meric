@@ -29,8 +29,7 @@
 */
 
 #include "cntd.h"
-//#include "${CNTD_MERIC_DIR}/cntd_meric.h"
-#include "/home/it4i-kaddooja/test3/meric/cntd_meric.h"
+
 
 static FILE *timeseries_fd;
 
