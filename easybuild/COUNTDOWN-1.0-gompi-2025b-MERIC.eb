@@ -1,0 +1,111 @@
+easyblock = 'CMakeMake'
+
+name = 'COUNTDOWN'
+version = '1.0'
+versionsuffix = '-MERIC'
+
+homepage = 'https://github.com/kaddooja/countdown_meric'
+description = """COUNTDOWN-MERIC: a run-time library for application-agnostic energy saving
+in MPI communication primitives (COUNTDOWN), integrated with the MERIC energy
+measurement library. Instrument an MPI application by preloading libcntd.so."""
+
+# gompi = GCC + OpenMPI only (no BLAS/FFTW needed)
+toolchain = {'name': 'gompi', 'version': '2025b'}
+# MERIC is built as a static library and linked into the shared libcntd.so,
+# so everything must be compiled position-independent.
+toolchainopts = {'pic': True}
+
+local_commit = 'f3b67a98fc111f2e048edc411ae0471c9115b6c8'  # kaddooja/countdown_meric, branch develop
+
+# MERIC energy domain to enable in src/sampling.c. Pick the one for your hardware:
+#   NVML (NVIDIA GPUs, e.g. GH200), RAPL (Intel/AMD x86 CPUs), A64FX (Fujitsu A64FX),
+#   HDEEM, ROCM (AMD GPUs)
+local_energy_domain = 'NVML'
+
+# COUNTDOWN comes straight from GitHub. MERIC is not on GitHub: attach
+# meric-external.tar.gz (top folder 'meric') to the v%(version)s release of the repo.
+# On a cluster without internet, put both files in <sourcepath>/c/COUNTDOWN/ yourself.
+source_urls = [
+    'https://github.com/kaddooja/countdown_meric/archive/',
+    'https://github.com/kaddooja/countdown_meric/releases/download/v%(version)s/',
+]
+sources = [
+    {
+        'download_filename': '%s.tar.gz' % local_commit,
+        'filename': 'countdown_meric-%(version)s-' + local_commit[:7] + '.tar.gz',
+        'source_urls': [source_urls[0]],
+    },
+    {
+        'filename': 'meric-external.tar.gz',
+        'source_urls': [source_urls[1]],
+    },
+]
+# fill in with: eb COUNTDOWN-1.0-gompi-2025b-MERIC.eb --inject-checksums
+checksums = []
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+]
+
+dependencies = [
+    ('hwloc', '2.12.1'),
+]
+
+start_dir = 'countdown_meric-%s' % local_commit
+
+# Only used for the NVML domain: MERIC reads GPU energy through NVIDIA NVML.
+# nvml.h comes from the CUDA toolkit, libnvidia-ml.so from the GPU driver.
+# Adjust these two paths to your system (harmless if NVML is not used).
+local_nvml_inc = '/usr/local/cuda/include'
+local_nvml_lib = '/usr/lib64'
+
+# CMake build directory used by EasyBuild (out-of-source build)
+separate_build_dir = True
+local_objdir = '%(builddir)s/easybuild_obj'
+
+# COUNTDOWN's CMakeLists.txt normally git-clones MERIC into <build dir>/meric
+# (FetchContent) and runs 'make' there. The build node has no internet, so:
+#  - copy the MERIC sources from the tarball to where CMake expects them
+#  - tell FetchContent to use that folder and never go online
+#  - drop 'set(CMAKE_C_FLAGS "-g")', which would wipe the toolchain's
+#    optimisation and -fPIC flags (no-op if the line is already gone)
+#  - enable exactly one MERIC energy domain (comment all, then enable the chosen one)
+local_sampling = '%(start_dir)s/src/sampling.c'
+preconfigopts = "sed -i -E 's|^([[:space:]]*)(EXTLIB_ENERGY_ENABLE_DOMAIN\\()|\\1// \\2|' %s && " % local_sampling
+preconfigopts += ("sed -i -E '0,/\\/\\/[[:space:]]*(EXTLIB_ENERGY_ENABLE_DOMAIN\\(energy_domains, EXTLIB_ENERGY_DOMAIN_%s\\))/"
+                  "s//\\1/' %s && " % (local_energy_domain, local_sampling))
+preconfigopts += "sed -i '/set(CMAKE_C_FLAGS \"-g\")/d' %(start_dir)s/src/CMakeLists.txt && "
+preconfigopts += 'mkdir -p %s && cp -a %%(builddir)s/meric %s/meric && ' % (local_objdir, local_objdir)
+# MERIC's Makefile runs waf; it takes dependency paths only through these two
+# variables, so write them into the copied Makefile (CMake calls plain 'make')
+preconfigopts += "sed -i -e 's|^INCLUDES_MERIC=.*|INCLUDES_MERIC=%s|' " % local_nvml_inc
+# run waf with python3 explicitly ('./waf' may ask for a plain 'python' that doesn't exist)
+preconfigopts += "-e 's|^LIBPATH_MERIC=.*|LIBPATH_MERIC=%s|' -e 's|\\./waf |python3 ./waf |g' " % local_nvml_lib
+preconfigopts += "%s/meric/Makefile && " % local_objdir
+
+configopts = '-DCNTD_ENABLE_MERIC=ON '
+configopts += '-DFETCHCONTENT_FULLY_DISCONNECTED=ON '
+configopts += '-DFETCHCONTENT_SOURCE_DIR_MERIC=%s/meric ' % local_objdir
+configopts += '-DCNTD_USE_CPUFREQ=ON '
+# with NVML, libmeric_ext.a calls NVML, so libcntd.so must link the NVIDIA driver library
+local_nvml_link = '-DCMAKE_C_STANDARD_LIBRARIES="-L%s -lnvidia-ml" ' % local_nvml_lib
+configopts += local_nvml_link if local_energy_domain == 'NVML' else ''
+# the project declares cmake_minimum_required(VERSION 3.0), which CMake >= 4 rejects
+configopts += '-DCMAKE_POLICY_VERSION_MINIMUM=3.5 '
+
+sanity_check_paths = {
+    'files': ['lib/libcntd.%s' % SHLIB_EXT],
+    'dirs': [],
+}
+
+sanity_check_commands = ["nm -D %(installdir)s/lib/libcntd." + SHLIB_EXT + " | grep -q ' T MPI_Init$'"]
+
+modextravars = {'CNTD_LIBRARY': '%(installdir)s/lib/libcntd.' + SHLIB_EXT}
+
+usage = """Instrument an MPI application by preloading the library:
+    module load %(name)s/%(version)s-%(toolchain_name)s-%(toolchain_version)s%(versionsuffix)s
+    export LD_PRELOAD=$CNTD_LIBRARY
+    mpirun ./your_app
+Each MPI rank must be pinned to its own CPU. See the README for CNTD_* runtime variables."""
+
+moduleclass = 'perf'
