@@ -40,6 +40,7 @@ release of this repo.
 ```bash
 git clone https://github.com/kaddooja/countdown_meric.git
 cd countdown_meric/easybuild
+ml EasyBuild
 eb COUNTDOWN-1.0-gompi-2025b-MERIC.eb --robot --dry-run   # shows what will be built
 eb COUNTDOWN-1.0-gompi-2025b-MERIC.eb --robot
 ```
