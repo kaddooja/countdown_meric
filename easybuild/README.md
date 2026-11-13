@@ -40,6 +40,7 @@ release of this repo.
 ```bash
 git clone https://github.com/kaddooja/countdown_meric.git
 cd countdown_meric/easybuild
+ml EasyBuild
 eb COUNTDOWN-1.0-gompi-2025b-MERIC.eb --robot --dry-run   # shows what will be built
 eb COUNTDOWN-1.0-gompi-2025b-MERIC.eb --robot
 ```
@@ -51,12 +52,6 @@ then build on a compute node:
 eb COUNTDOWN-1.0-gompi-2025b-MERIC.eb --fetch       # login node
 eb COUNTDOWN-1.0-gompi-2025b-MERIC.eb --robot       # compute node / Slurm job
 ```
-
-If no node has internet, copy these two files into `<sourcepath>/c/COUNTDOWN/`:
-- `https://github.com/kaddooja/countdown_meric/archive/<commit>.tar.gz`, saved as
-  `countdown_meric-1.0-<first 7 characters of commit>.tar.gz` (the commit is
-  `local_commit` in the recipe)
-- `meric-external.tar.gz` from the v1.0 release
 
 **Testing in your home directory**, without touching the site's software stack:
 
